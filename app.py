@@ -62,6 +62,7 @@ class ElGamal:
     def send_function(self,*args):
         data = self.send_e.get()
         data = data + '\n'
+        print(f"Gönderilecek veri: {data}")
         self.sender(data)
         self.text_t.configure(state='normal')
         self.text_t.insert(tk.END,self.own_nick+': '+data)
@@ -99,6 +100,7 @@ class ElGamal:
                 for e in data2:
                     x = self.eg_encrypt(ord(e))
                     a = self.long_to_byte(x)
+                    print(f"{a}")
                     self.ser.write(a)
                 time.sleep(1)
             else:
@@ -106,6 +108,7 @@ class ElGamal:
                 for e in data2:
                     x = self.eg_encrypt(ord(e))
                     a = self.long_to_byte(x)
+                    print(f"{a}")
                     self.ser.write(a)
                 break
             i+=8
@@ -177,12 +180,17 @@ class ElGamal:
     def receiver(self):
         if self.is_connected:
             data_r = self.serseri.read(size = 4)
+            if len(data_r) > 0:
+                print(f"Alınan veri: {data_r}")
             c = self.byte_to_long(data_r)
+            if c > 0:
+                print(f"Integer hali: {c}")
             m = self.eg_decrypte(c,self.Key_inv)
             if m>=20:
                 self.r_message = self.r_message + chr(m)
             elif m == 10:
                 self.r_message += chr(m)
+                print(f"{self.r_message}")
                 self.r_message = self.ot_nick+': '+self.r_message
                 self.r_finished=True
         else:
@@ -344,3 +352,4 @@ win = tk.Tk()
 win.title('ElGamal Şifreleme Programı')
 elgamal = ElGamal(win)
 win.mainloop()
+
